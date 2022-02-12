@@ -1,0 +1,22 @@
+{
+  "name": "license-plate-game",
+  "version": "1.0.0",
+  "description": "Deborah's license plate game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jluckyiv/license-plate-game.git"
+  },
+  "author": "Jackson Lucky",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jluckyiv/license-plate-game/issues"
+  },
+  "homepage": "https://github.com/jluckyiv/license-plate-game#readme",
+  "devDependencies": {
+    "parcel": "^2.3.1"
+  }
+}
