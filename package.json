@@ -4,7 +4,9 @@
   "description": "Deborah's license plate game",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "parcel src/index.html",
+    "test": "elm-test",
+    "test:watch": "elm-test --watch"
   },
   "repository": {
     "type": "git",
@@ -19,6 +21,7 @@
   "devDependencies": {
     "@parcel/transformer-elm": "2.3.1",
     "elm": "^0.19.1-5",
+    "elm-test": "^0.19.1-revision7",
     "elm-tooling": "^1.7.0",
     "parcel": "^2.3.1"
   }
