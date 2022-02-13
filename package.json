@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/jluckyiv/license-plate-game#readme",
   "devDependencies": {
+    "@parcel/transformer-elm": "2.3.1",
+    "elm": "^0.19.1-5",
+    "elm-tooling": "^1.7.0",
     "parcel": "^2.3.1"
   }
 }
