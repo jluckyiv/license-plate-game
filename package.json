@@ -23,6 +23,8 @@
     "elm": "^0.19.1-5",
     "elm-test": "^0.19.1-revision7",
     "elm-tooling": "^1.7.0",
-    "parcel": "^2.3.1"
+    "os-browserify": "^0.3.0",
+    "parcel": "^2.3.1",
+    "path-browserify": "^1.0.1"
   }
 }
