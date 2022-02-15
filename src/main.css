@@ -6,15 +6,115 @@
     url("LICENSE PLATE USA.woff") format("woff");
 }
 
-.license-plate {
-  font-family: "LICENSE PLATE USA Regular";
-  font-size: x-large;
-  background-color: rgb(17, 14, 21);
-  color: rgb(221, 163, 56);
+.container {
+  text-align: center;
 }
-.license-plate-state {
+
+.license-plate {
+  user-select: none;
   font-family: "LICENSE PLATE USA Regular";
-  font-size: x-small;
   background-color: rgb(17, 14, 21);
   color: rgb(221, 163, 56);
+  text-align: center;
+  width: 75%;
+  max-width: 400px;
+  border-radius: 15px;
+  margin: 0 auto;
+}
+
+.license-plate__state {
+  font-size: 1.2rem;
+  padding: 15px;
+}
+
+.license-plate__number {
+  font-size: 4rem;
+}
+
+.keyboard {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding: 5px 0;
+  background: rgb(17, 14, 21);
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+  user-select: none;
+  transition: bottom 0.4s;
+}
+
+.keyboard--hidden {
+  bottom: -100%;
+}
+
+.keyboard__keys {
+  text-align: center;
+}
+
+.keyboard__key {
+  height: 45px;
+  width: 8%;
+  max-width: 90px;
+  margin: 3px;
+  border-radius: 4px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: rgb(221, 163, 56);
+  font-size: 1.05rem;
+  outline: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: top;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+
+.keyboard__key:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.keyboard__key--wide {
+  width: 12%;
+}
+
+.keyboard__key--extra-wide {
+  width: 36%;
+  max-width: 500px;
+}
+
+.keyboard__key--dark {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.keyboard__key--dark:active {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.board {
+  width: 100%;
+  padding: 25px 5px;
+  margin: 25px 0px;
+  user-select: none;
+}
+
+.reset-button {
+  height: 45px;
+  margin: 21px 3px;
+  border-radius: 4px;
+  border: none;
+  background: rgb(17, 14, 21);
+  color: rgb(221, 163, 56);
+  font-size: 1.05rem;
+  outline: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: top;
+  padding: 3px 13px;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
 }

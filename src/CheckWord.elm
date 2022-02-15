@@ -5,7 +5,8 @@ import List.Extra as List exposing (isSubsequenceOf)
 
 
 type Score
-    = Valid Int
+    = NotRequested
+    | Valid Int
     | Invalid (List Reason)
 
 
@@ -14,9 +15,17 @@ type Reason
     | InvalidWord
 
 
+noScore : Score
+noScore =
+    NotRequested
+
+
 toString : Score -> String
 toString score_ =
     case score_ of
+        NotRequested ->
+            ""
+
         Valid int ->
             String.fromInt int
 

@@ -2,8 +2,8 @@ port module Main exposing (..)
 
 import Browser exposing (Document)
 import CheckWord exposing (Score(..))
-import Html exposing (Html, button, div, input, text)
-import Html.Attributes exposing (class, placeholder, value)
+import Html exposing (Html, br, button, div, input, span, text)
+import Html.Attributes exposing (class, placeholder, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Http exposing (Error(..))
 import LicensePlate exposing (LicensePlate)
@@ -37,7 +37,7 @@ init _ =
             LicensePlate.empty
 
         score =
-            CheckWord.score False licensePlate inputValue
+            CheckWord.noScore
     in
     ( Model inputValue licensePlate score, getRandomPlate )
 
@@ -62,16 +62,17 @@ type Msg
     | ClickedResetButton
     | GotRandomPlate LicensePlate
     | GotWordCheck Bool
+    | PressedKeyboardKey String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         BlurredInput str ->
-            ( { model | inputValue = str }, getScrabbleScore str )
+            ( { model | inputValue = str }, Cmd.none )
 
         ClickedResetButton ->
-            ( { model | inputValue = "" }, getRandomPlate )
+            ( { model | inputValue = "", score = CheckWord.noScore }, getRandomPlate )
 
         GotRandomPlate plate ->
             ( { model | licensePlate = plate }, Cmd.none )
@@ -82,6 +83,32 @@ update msg model =
                     CheckWord.score isValid model.licensePlate model.inputValue
             in
             ( { model | score = score }, Cmd.none )
+
+        PressedKeyboardKey key ->
+            handleKeyboardKey model key
+
+
+handleKeyboardKey : Model -> String -> ( Model, Cmd Msg )
+handleKeyboardKey model key =
+    case key of
+        "↵" ->
+            ( model, getScrabbleScore model.inputValue )
+
+        "⌫" ->
+            ( { model
+                | inputValue = String.dropRight 1 model.inputValue
+                , score = CheckWord.noScore
+              }
+            , Cmd.none
+            )
+
+        _ ->
+            ( { model
+                | inputValue = model.inputValue ++ key
+                , score = CheckWord.noScore
+              }
+            , Cmd.none
+            )
 
 
 getRandomPlate : Cmd Msg
@@ -94,18 +121,78 @@ getScrabbleScore str =
     getWordCheck str
 
 
+keyboardKey : (String -> Msg) -> Char -> Html Msg
+keyboardKey toMsg char =
+    let
+        letter =
+            String.fromChar char
+    in
+    if Char.isAlpha char then
+        button [ type_ "button", class "keyboard__key", onClick (toMsg letter) ] [ text letter ]
+
+    else if letter == "_" then
+        br [] []
+
+    else if letter == "⌫" then
+        button [ type_ "button", class "keyboard__key", class "keyboard__key--wide", onClick (toMsg letter) ] [ text letter ]
+
+    else if letter == "↵" then
+        button [ type_ "button", class "keyboard__key", class "keyboard__key--wide", class "keyboard__key--dark", onClick (toMsg letter) ] [ text letter ]
+
+    else
+        text ""
+
+
+scrabbleTile : Char -> Html msg
+scrabbleTile char =
+    let
+        letter =
+            String.fromChar char
+    in
+    span [ class "scrabble-tile__letter" ] [ text letter ]
+
+
+viewScore : Score -> Html Msg
+viewScore score =
+    case score of
+        CheckWord.NotRequested ->
+            text ""
+
+        _ ->
+            div []
+                [ div [ class "score" ]
+                    [ text <| CheckWord.toString score
+                    ]
+                , div []
+                    [ button [ class "reset-button", onClick ClickedResetButton ] [ text "Reset" ]
+                    ]
+                ]
+
+
 view : Model -> Document Msg
 view model =
     { title = "Title"
     , body =
-        [ div []
-            [ div [ class "license-plate-state" ] [ text "CALIFORNIA" ]
-            , div [ class "license-plate" ] [ text <| LicensePlate.toString model.licensePlate ]
+        [ div [ class "container" ]
+            [ div [ class "license-plate" ]
+                [ div [ class "license-plate__state" ] [ text "CALIFORNIA" ]
+                , div [ class "license-plate__number" ] [ text <| LicensePlate.toString model.licensePlate ]
+                ]
+            , div [ class "board" ]
+                [ div [ class "scrabble-container", class "display--inline-block" ]
+                    (model.inputValue
+                        |> String.toList
+                        |> List.map scrabbleTile
+                    )
+                ]
+            , viewScore model.score
+            , div [ class "keyboard" ]
+                [ div [ class "keyboard__keys" ]
+                    (List.map
+                        (keyboardKey PressedKeyboardKey)
+                        [ 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '_', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', '_', '↵', 'z', 'x', 'c', 'v', 'b', 'n', 'm', '⌫' ]
+                    )
+                ]
             ]
-        , div []
-            [ input [ placeholder "Word", value model.inputValue, onInput BlurredInput ] []
-            , text <| "Score: " ++ CheckWord.toString model.score
-            ]
-        , button [ onClick ClickedResetButton ] [ text "Reset" ]
         ]
     }
