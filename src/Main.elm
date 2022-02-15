@@ -171,7 +171,7 @@ viewScore score =
 
 view : Model -> Document Msg
 view model =
-    { title = "Title"
+    { title = "Deb's License Plate Game"
     , body =
         [ div [ class "container" ]
             [ div [ class "license-plate" ]
