@@ -158,23 +158,6 @@ scrabbleTile char =
     span [ class "scrabble-tile__letter" ] [ text letter ]
 
 
-viewScore : Score -> Html Msg
-viewScore score =
-    case score of
-        CheckWord.NotRequested ->
-            text ""
-
-        _ ->
-            div []
-                [ div [ class "score" ]
-                    [ text <| CheckWord.toString score
-                    ]
-                , div []
-                    [ button [ class "reset-button", onClick ClickedResetButton ] [ text "Reset" ]
-                    ]
-                ]
-
-
 view : Model -> Document Msg
 view model =
     { title = "Deb's License Plate Game"
@@ -191,7 +174,22 @@ view model =
                         |> List.map scrabbleTile
                     )
                 ]
-            , viewScore model.score
+            , case model.score of
+                CheckWord.NotRequested ->
+                    text ""
+
+                _ ->
+                    div []
+                        [ div [ class "scrabble-container", class "display--inline-block" ]
+                            (model.score
+                                |> CheckWord.toString
+                                |> String.toList
+                                |> List.map scrabbleTile
+                            )
+                        , div []
+                            [ button [ class "reset-button", onClick ClickedResetButton ] [ text "Reset" ]
+                            ]
+                        ]
             , div [ class "keyboard" ]
                 [ div [ class "keyboard__keys" ]
                     (List.map
