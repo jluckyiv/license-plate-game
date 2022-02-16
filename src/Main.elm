@@ -4,8 +4,9 @@ import Browser exposing (Document)
 import CheckWord exposing (Score(..))
 import Html exposing (Html, br, button, div, input, span, text)
 import Html.Attributes exposing (class, placeholder, type_, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Events exposing (on, onClick, onInput)
 import Http exposing (Error(..))
+import Json.Decode as Decode
 import LicensePlate exposing (LicensePlate)
 import Random
 
@@ -121,6 +122,11 @@ getScrabbleScore str =
     getWordCheck str
 
 
+onPointerDown : msg -> Html.Attribute msg
+onPointerDown message =
+    on "pointerdown" (Decode.succeed message)
+
+
 keyboardKey : (String -> Msg) -> Char -> Html Msg
 keyboardKey toMsg char =
     let
@@ -128,7 +134,7 @@ keyboardKey toMsg char =
             String.fromChar char
     in
     if Char.isAlpha char then
-        button [ type_ "button", class "keyboard__key", onClick (toMsg letter) ] [ text letter ]
+        button [ type_ "button", class "keyboard__key", onPointerDown (toMsg letter) ] [ text letter ]
 
     else if letter == "_" then
         br [] []
