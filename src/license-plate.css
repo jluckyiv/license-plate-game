@@ -16,8 +16,9 @@
   background-color: rgb(17, 14, 21);
   color: rgb(221, 163, 56);
   text-align: center;
-  width: 75%;
-  max-width: 400px;
+  aspect-ratio: 2/1;
+  width: 80%;
+  max-width: 430px;
   border-radius: 15px;
   margin: 0 auto;
 }
