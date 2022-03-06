@@ -31,3 +31,28 @@ Word not found
   "message": "Not found"
 }
 ```
+
+Wordnik has an open-source [word list](https://github.com/wordnik/wordlist).
+The latest version is [July 2021](https://raw.githubusercontent.com/wordnik/wordlist/main/wordlist-20210729.txt)
+It is a list of strings in quotes, but not CSV or JSON.
+Here are the steps to convert.
+
+```shell
+# Download the file
+curl https://raw.githubusercontent.com/wordnik/wordlist/main/wordlist-20210729.txt -o wordlist.txt
+
+# Copy to json
+cp wordlist.txt wordlist.json
+
+# Add commas to each line
+sed '$!s/$/,/' wordlist.json
+
+# Add an opening square bracket
+sed -i '1 i\[' wordlist.json
+
+# Add a closing bracket
+sed -i "$ a ]" wordlist.json
+
+# Format (optional)
+npx prettier --write wordlist.json
+```

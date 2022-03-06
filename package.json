@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Deborah's license plate game",
   "scripts": {
+    "postinstall": "elm-tooling install",
     "start": "parcel src/index.html",
     "build": "parcel build src/index.html",
     "test": "elm-test",
@@ -19,6 +20,7 @@
   },
   "homepage": "https://github.com/jluckyiv/license-plate-game#readme",
   "devDependencies": {
+    "@parcel/core": "^2.3.2",
     "@parcel/transformer-elm": "2.3.1",
     "elm": "^0.19.1-5",
     "elm-test": "^0.19.1-revision7",
@@ -26,5 +28,9 @@
     "os-browserify": "^0.3.0",
     "parcel": "^2.3.1",
     "path-browserify": "^1.0.1"
+  },
+  "dependencies": {
+    "fzy.js": "^0.4.1",
+    "lodash.sortby": "^4.7.0"
   }
 }

@@ -1,5 +1,7 @@
-module LicensePlate exposing (LicensePlate, empty, generator, letters, toString)
+module LicensePlate exposing (LicensePlate, empty, generator, letters, view)
 
+import Html exposing (Html, div, text)
+import Html.Attributes exposing (class)
 import Random
 
 
@@ -69,3 +71,13 @@ lettersGenerator =
 generator : Random.Generator LicensePlate
 generator =
     Random.map2 create lettersGenerator digitsGenerator
+
+
+view : LicensePlate -> Html msg
+view plate =
+    div [ class "license-plate__container" ]
+        [ div [ class "license-plate__plate" ]
+            [ div [ class "license-plate__state" ] [ text "CALIFORNIA" ]
+            , div [ class "license-plate__number" ] [ text <| toString plate ]
+            ]
+        ]
