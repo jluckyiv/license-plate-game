@@ -2,6 +2,7 @@ port module Main exposing (..)
 
 import Browser exposing (Document)
 import Browser.Events
+import Dict exposing (Dict)
 import Html exposing (Html, br, button, div, input, p, span, text)
 import Html.Attributes exposing (class, placeholder, type_, value)
 import Html.Events exposing (on, onClick, onInput)
@@ -27,8 +28,12 @@ port gotPlateCheck : (List String -> msg) -> Sub msg
 type alias Model =
     { inputValue : String
     , licensePlate : LicensePlate
-    , validSolutions : List String
+    , validSolutions : Solutions
     }
+
+
+type alias Solutions =
+    Dict String Int
 
 
 init : () -> ( Model, Cmd Msg )
@@ -41,7 +46,7 @@ init _ =
             LicensePlate.empty
 
         validWords =
-            []
+            Dict.empty
     in
     ( Model inputValue licensePlate validWords, getRandomPlate )
 
@@ -94,10 +99,17 @@ update msg model =
                         _ ->
                             Cmd.none
             in
-            ( { model | validSolutions = words }, cmd )
+            ( { model | validSolutions = toSolutions words }, cmd )
 
         PressedKeyboardKey key ->
             handleKeyboardKey model key
+
+
+toSolutions : List String -> Solutions
+toSolutions words =
+    words
+        |> List.map (\word -> ( word, ScrabbleScore.score word ))
+        |> Dict.fromList
 
 
 type Key
@@ -188,7 +200,7 @@ view model =
             [ LicensePlate.view model.licensePlate
             , div []
                 [ div []
-                    [ p [] [ text ("There are " ++ String.fromInt (List.length model.validSolutions) ++ " valid solutions.") ]
+                    [ p [] [ text ("There are " ++ String.fromInt (model.validSolutions |> Dict.toList |> List.length) ++ " valid solutions.") ]
                     , p []
                         [ text
                             ((if model.inputValue == "" then
@@ -197,7 +209,7 @@ view model =
                               else
                                 String.toUpper model.inputValue
                              )
-                                ++ (if List.member model.inputValue model.validSolutions then
+                                ++ (if Dict.member model.inputValue model.validSolutions then
                                         " is "
 
                                     else
