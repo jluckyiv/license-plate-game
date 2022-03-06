@@ -114,7 +114,7 @@ keyDecoder =
 
 toKey : String -> Key
 toKey string =
-    case String.uncons (Debug.log "toKey" string) of
+    case String.uncons string of
         Just ( '↵', "" ) ->
             Enter
 
@@ -130,7 +130,7 @@ toKey string =
 
 handleKeyboardKey : Model -> String -> ( Model, Cmd Msg )
 handleKeyboardKey model key =
-    case String.uncons (Debug.log "handleKeyboardKey" key) of
+    case String.uncons key of
         Just ( '↵', "" ) ->
             ( model, Cmd.none )
 
