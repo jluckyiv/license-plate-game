@@ -1,4 +1,4 @@
-module LicensePlate exposing (LicensePlate, empty, generator, letters, view)
+module LicensePlate exposing (LicensePlate, empty, generator, letters, toString, view)
 
 import Html exposing (Html, div, text)
 import Html.Attributes exposing (class)

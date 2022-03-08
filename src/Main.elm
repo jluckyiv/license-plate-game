@@ -3,9 +3,11 @@ port module Main exposing (..)
 import Browser exposing (Document)
 import Browser.Events
 import Dict exposing (Dict)
-import Html exposing (Html, br, button, div, input, p, span, text)
-import Html.Attributes exposing (class, placeholder, style, type_, value)
-import Html.Events exposing (on, onClick, onInput)
+import Element exposing (Element, alignBottom, centerX, centerY, column, el, fill, height, padding, px, rgb255, row, spacing, spacingXY, text, width)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
+import FontAwesome.Attributes exposing (border)
 import Http exposing (Error(..))
 import Json.Decode as Decode
 import Keyboard
@@ -200,75 +202,74 @@ getRandomPlate =
     Random.generate GotRandomPlate LicensePlate.generator
 
 
-letterTile : Char -> Html msg
-letterTile char =
-    let
-        letter =
-            String.fromChar char
-    in
-    span [ class "board__letter-tile" ] [ text letter ]
-
-
-viewSolutions : Solutions -> Html Msg
-viewSolutions solutions =
-    let
-        numberOfSolutions =
-            String.fromInt
-                (solutions
-                    |> Dict.toList
-                    |> List.length
-                )
-    in
-    div []
-        [ p []
-            [ text
-                ("There are " ++ numberOfSolutions ++ " valid solutions.")
-            ]
-        ]
-
-
-viewPlayerSolution : String -> Solutions -> Html msg
-viewPlayerSolution inputValue validSolutions =
-    div []
-        [ p []
-            [ text <|
-                if Dict.member inputValue validSolutions then
-                    " is "
-
-                else
-                    " is not "
-                        ++ "a valid solution."
-            ]
-        ]
-
-
-viewScrabbleScore : String -> Html msg
-viewScrabbleScore inputValue =
-    div [] [ p [] [ text ("Scrabble score: " ++ String.fromInt (ScrabbleScore.score inputValue)) ] ]
-
-
 view : Model -> Document Msg
 view model =
     { title = "Deb's License Plate Game"
     , body =
-        [ div [ class "container" ]
-            [ LicensePlate.view model.licensePlate
-            , viewSolutions model.validSolutions
-            , div []
-                [ div []
-                    [ button [ class "reset-button", onClick ClickedResetButton ] [ text "Reset" ]
-                    ]
+        [ Element.layout []
+            (column
+                [ width fill
+                , height fill
+                , Element.explain Debug.todo
                 ]
-            , div [ class "board" ]
-                [ div [ style "min-height" "100px", style "height" "50px" ]
-                    (model.inputValue
-                        |> String.toList
-                        |> List.map letterTile
-                    )
-                , div [ style "clear" "both" ] []
+                [ licensePlateContainer model
+                , gamePlayContainer model
+                , keyboardContainer PressedKeyboardKey
                 ]
-            , viewScrabbleScore model.inputValue
-            , Keyboard.view PressedKeyboardKey
-            ]
+            )
         ]
     }
+
+
+licensePlateContainer : Model -> Element msg
+licensePlateContainer model =
+    el [ width fill, padding 10 ] (licensePlateView model)
+
+
+licensePlateView : Model -> Element msg
+licensePlateView model =
+    column
+        [ centerX
+        , centerY
+        , height (px 180)
+        , width (px 360)
+        , padding 20
+        , spacing 20
+        , Border.rounded 15
+        , Background.color (rgb255 17 14 21)
+        , Font.family [ Font.typeface "LICENSE PLATE USA Regular" ]
+        , Font.color (rgb255 221 163 56)
+        ]
+        [ licensePlateState
+        , licensPlateText model
+        ]
+
+
+licensePlateState : Element msg
+licensePlateState =
+    el [ centerX ] (text "CALIFORNIA")
+
+
+licensPlateText : Model -> Element msg
+licensPlateText model =
+    el
+        [ centerX
+        , centerY
+        , Font.size 70
+        ]
+        (text <| LicensePlate.toString model.licensePlate)
+
+
+gamePlayContainer : Model -> Element msg
+gamePlayContainer model =
+    el [ centerX, centerY, width fill, height fill ] (text "Gameplay container")
+
+
+keyboardContainer : (String -> Msg) -> Element Msg
+keyboardContainer toMsg =
+    el [ centerX, centerY ] (keyboard toMsg)
+
+
+keyboard : (String -> Msg) -> Element Msg
+keyboard toMsg =
+    text "Keyboard container"
