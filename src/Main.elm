@@ -4,7 +4,7 @@ import Browser exposing (Document)
 import Browser.Events
 import Dict exposing (Dict)
 import Html exposing (Html, br, button, div, input, p, span, text)
-import Html.Attributes exposing (class, placeholder, type_, value)
+import Html.Attributes exposing (class, placeholder, style, type_, value)
 import Html.Events exposing (on, onClick, onInput)
 import Http exposing (Error(..))
 import Json.Decode as Decode
@@ -22,7 +22,21 @@ import ScrabbleScore
 port getPlateCheck : String -> Cmd msg
 
 
-port gotPlateCheck : (List String -> msg) -> Sub msg
+port gotPlateCheck : (List Result -> msg) -> Sub msg
+
+
+type alias Result =
+    { word : String
+    , score : Float
+    }
+
+
+type alias Solutions =
+    Dict String Score
+
+
+type alias Score =
+    { scrabbleScore : Int, matchScore : Float }
 
 
 type alias Model =
@@ -30,10 +44,6 @@ type alias Model =
     , licensePlate : LicensePlate
     , validSolutions : Solutions
     }
-
-
-type alias Solutions =
-    Dict String Int
 
 
 init : () -> ( Model, Cmd Msg )
@@ -73,7 +83,7 @@ type Msg
     = BlurredInput String
     | ClickedResetButton
     | GotRandomPlate LicensePlate
-    | GotPlateCheck (List String)
+    | GotPlateCheck (List Result)
     | PressedKeyboardKey String
 
 
@@ -89,26 +99,33 @@ update msg model =
         GotRandomPlate plate ->
             ( { model | licensePlate = plate }, getPlateCheck (LicensePlate.letters plate) )
 
-        GotPlateCheck words ->
+        GotPlateCheck resultList ->
             let
                 cmd =
-                    case words of
+                    case resultList of
                         [] ->
                             getRandomPlate
 
                         _ ->
                             Cmd.none
             in
-            ( { model | validSolutions = toSolutions words }, cmd )
+            ( { model | validSolutions = toSolutions resultList }, cmd )
 
         PressedKeyboardKey key ->
             handleKeyboardKey model key
 
 
-toSolutions : List String -> Solutions
+toSolutions : List Result -> Solutions
 toSolutions words =
     words
-        |> List.map (\word -> ( word, ScrabbleScore.score word ))
+        |> List.map
+            (\result ->
+                ( result.word
+                , { scrabbleScore = ScrabbleScore.score result.word
+                  , matchScore = result.score
+                  }
+                )
+            )
         |> Dict.fromList
 
 
@@ -192,45 +209,65 @@ letterTile char =
     span [ class "board__letter-tile" ] [ text letter ]
 
 
+viewSolutions : Solutions -> Html Msg
+viewSolutions solutions =
+    let
+        numberOfSolutions =
+            String.fromInt
+                (solutions
+                    |> Dict.toList
+                    |> List.length
+                )
+    in
+    div []
+        [ p []
+            [ text
+                ("There are " ++ numberOfSolutions ++ " valid solutions.")
+            ]
+        ]
+
+
+viewPlayerSolution : String -> Solutions -> Html msg
+viewPlayerSolution inputValue validSolutions =
+    div []
+        [ p []
+            [ text <|
+                if Dict.member inputValue validSolutions then
+                    " is "
+
+                else
+                    " is not "
+                        ++ "a valid solution."
+            ]
+        ]
+
+
+viewScrabbleScore : String -> Html msg
+viewScrabbleScore inputValue =
+    div [] [ p [] [ text ("Scrabble score: " ++ String.fromInt (ScrabbleScore.score inputValue)) ] ]
+
+
 view : Model -> Document Msg
 view model =
     { title = "Deb's License Plate Game"
     , body =
         [ div [ class "container" ]
             [ LicensePlate.view model.licensePlate
+            , viewSolutions model.validSolutions
             , div []
                 [ div []
-                    [ p [] [ text ("There are " ++ String.fromInt (model.validSolutions |> Dict.toList |> List.length) ++ " valid solutions.") ]
-                    , p []
-                        [ text
-                            ((if model.inputValue == "" then
-                                "<BLANK>"
-
-                              else
-                                String.toUpper model.inputValue
-                             )
-                                ++ (if Dict.member model.inputValue model.validSolutions then
-                                        " is "
-
-                                    else
-                                        " is not "
-                                   )
-                                ++ "a valid solution."
-                            )
-                        ]
-                    , p [] [ text ("Scrabble score: " ++ String.fromInt (ScrabbleScore.score model.inputValue)) ]
-                    ]
-                , div []
                     [ button [ class "reset-button", onClick ClickedResetButton ] [ text "Reset" ]
                     ]
                 ]
             , div [ class "board" ]
-                [ div [ class "container" ]
+                [ div [ style "min-height" "100px", style "height" "50px" ]
                     (model.inputValue
                         |> String.toList
                         |> List.map letterTile
                     )
+                , div [ style "clear" "both" ] []
                 ]
+            , viewScrabbleScore model.inputValue
             , Keyboard.view PressedKeyboardKey
             ]
         ]

@@ -1,6 +1,6 @@
 import { Elm } from "./Main.elm";
 const fzy = require("fzy.js");
-const sortBy = require("lodash.sortby");
+// const sortBy = require("lodash.sortby");
 
 const words = require("./wordlist.json");
 const node = { node: document.getElementById("root") };
@@ -12,7 +12,12 @@ app.ports.getPlateCheck.subscribe(function (word) {
 });
 
 function checkPlate(plate) {
-  const matches = words.filter((word) => fzy.hasMatch(plate, word));
-  const sorted = sortBy(matches, (word) => -fzy.score(plate, word));
-  return sorted;
+  const matches = words
+    .filter((word) => fzy.hasMatch(plate, word))
+    .map((word) => {
+      return { word: word, score: fzy.score(plate, word) };
+    });
+  // const sorted = sortBy(matches, (word) => -fzy.score(plate, word));
+  // return sorted;
+  return matches;
 }
