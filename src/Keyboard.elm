@@ -19,7 +19,7 @@ keyboardKey toMsg char =
         br [] []
 
     else if letter == "⌫" then
-        button [ type_ "button", class "keyboard__key", class "keyboard__key--wide", onPointerDown (toMsg letter) ] [ text letter ]
+        button [ type_ "button", class "keyboard__key", class "keyboard__key--wide", class "keyboard__key--dark", onPointerDown (toMsg letter) ] [ text letter ]
 
     else if letter == "↵" then
         button [ type_ "button", class "keyboard__key", class "keyboard__key--wide", class "keyboard__key--dark", onPointerDown (toMsg letter) ] [ text letter ]
