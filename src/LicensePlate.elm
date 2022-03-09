@@ -1,7 +1,10 @@
 module LicensePlate exposing (LicensePlate, empty, generator, letters, toString, view)
 
-import Html exposing (Html, div, text)
-import Html.Attributes exposing (class)
+import Element exposing (..)
+import Element.Background as Background
+import Element.Border as Border
+import Element.Font as Font
+import Palette exposing (..)
 import Random
 
 
@@ -73,11 +76,40 @@ generator =
     Random.map2 create lettersGenerator digitsGenerator
 
 
-view : LicensePlate -> Html msg
+view : LicensePlate -> Element msg
 view plate =
-    div [ class "license-plate__container" ]
-        [ div [ class "license-plate__plate" ]
-            [ div [ class "license-plate__state" ] [ text "CALIFORNIA" ]
-            , div [ class "license-plate__number" ] [ text <| toString plate ]
-            ]
+    el [ width fill, padding 10 ] (licensePlateView plate)
+
+
+licensePlateView : LicensePlate -> Element msg
+licensePlateView plate =
+    column
+        [ centerX
+        , centerY
+        , height (px 180)
+        , width (px 360)
+        , padding 20
+        , spacing 20
+        , Border.rounded 15
+        , Background.color black
+        , Font.family [ Font.typeface "LICENSE PLATE USA Regular" ]
+        , Font.color yellow
         ]
+        [ licensePlateState
+        , licensePlateText plate
+        ]
+
+
+licensePlateState : Element msg
+licensePlateState =
+    el [ centerX ] (text "CALIFORNIA")
+
+
+licensePlateText : LicensePlate -> Element msg
+licensePlateText plate =
+    el
+        [ centerX
+        , centerY
+        , Font.size 70
+        ]
+        (text <| toString plate)
