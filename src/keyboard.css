@@ -1,3 +1,7 @@
+* {
+  touch-action: manipulation;
+}
+
 .keyboard {
   position: fixed;
   left: 0;
@@ -8,7 +12,6 @@
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
   user-select: none;
   transition: bottom 0.4s;
-  touch-action: manipulation;
 }
 
 .keyboard--hidden {
